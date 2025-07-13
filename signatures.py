@@ -8,21 +8,19 @@ def sign(m):
 
     assert isinstance(m, str), f"message {m} must be a string"
 
-    # Convert message to bytes if needed
     if isinstance(m, str):
         m = m.encode("utf-8")
     message = encode_defunct(m)
 
     # Create new Ethereum account
     account_object = Account.create()
-    private_key = account_object.key.hex()  # Eth account private key
-    public_key = account_object.address      # Eth account public key
+    private_key = account_object.key  # Keep as bytes
+    public_key = account_object.address
 
-    # Sign the message
     signed_message = Account.sign_message(message, private_key)
 
     print('Account created:\n'
-          f'private key={w3.to_hex(private_key)}\naccount={public_key}\n')
+          f'private key={private_key.hex()}\naccount={public_key}\n')
     assert isinstance(signed_message, eth_account.datastructures.SignedMessage)
 
     return public_key, signed_message
