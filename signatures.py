@@ -4,7 +4,7 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 def sign(m):
-    w3 = Web3()
+   ''' w3 = Web3()
     
     #assert isinstance(m, str), f"message {m} must be a string"
 
@@ -28,16 +28,50 @@ def sign(m):
     assert isinstance(signed_message, eth_account.datastructures.SignedMessage)
     # print(f"signed message {signed_message}\nr= {signed_message.r}\ns= {signed_message.s}")
 
+    return public_key, signed_message'''
+    w3 = Web3()
+
+    assert isinstance(m, str), f"message {m} must be a string"
+
+    # Convert message to bytes if needed
+    if isinstance(m, str):
+        m = m.encode("utf-8")
+    message = encode_defunct(m)
+
+    # Create new Ethereum account
+    account_object = Account.create()
+    private_key = account_object.key.hex()  # Eth account private key
+    public_key = account_object.address      # Eth account public key
+
+    # Sign the message
+    signed_message = Account.sign_message(message, private_key)
+
+    print('Account created:\n'
+          f'private key={w3.to_hex(private_key)}\naccount={public_key}\n')
+    assert isinstance(signed_message, eth_account.datastructures.SignedMessage)
+
     return public_key, signed_message
 
 
 def verify(m, public_key, signed_message):
-    w3 = Web3()
+    '''w3 = Web3()
     #assert isinstance(m, str), f"message {m} must be a string"
     #assert isinstance(public_key, str), f"public_key {public_key} must be a string"
     # TODO verify the 'signed_message' is valid given the original message 'm' and the signers 'public_key'
     message = encode_defunct(text=m)  # Encode the message
     signer = eth_account.Account.recover_message(message, signature=signed_message.signature)
+    valid_signature = signer == public_key
+    assert isinstance(valid_signature, bool), "verify should return a boolean value"
+    return valid_signature'''
+    w3 = Web3()
+    assert isinstance(m, str), f"message {m} must be a string"
+    assert isinstance(public_key, str), f"public_key {public_key} must be a string"
+
+    if isinstance(m, str):
+        m = m.encode("utf-8")
+    message = encode_defunct(m)
+
+    signer = Account.recover_message(message, signature=signed_message.signature)
     valid_signature = signer == public_key
     assert isinstance(valid_signature, bool), "verify should return a boolean value"
     return valid_signature
