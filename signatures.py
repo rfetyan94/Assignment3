@@ -9,13 +9,13 @@ def sign(m):
     assert isinstance(m, str), f"message {m} must be a string"
 
     # Create new Ethereum account
-    account_object = Account.create()
-    private_key = account_object.key.hex() # Eth account public key
-    public_key = account_object.address # Eth account private key
+    account_object = eth_account.Account.create()
+    private_key = account_object.address # Eth account public key
+    public_key = account_object.key # Eth account private key
 
     # Prepare the message and sign it
     message = encode_defunct(text=m)
-    signed_message = Account.sign_message(message, private_key)
+    signed_message = eth_account.Account.sign_message(message, private_key=private_key)
 
 
     """You can save the account public/private keypair that prints in the next section
@@ -36,8 +36,8 @@ def verify(m, public_key, signed_message):
     assert isinstance(m, str), f"message {m} must be a string"
     assert isinstance(public_key, str), f"public_key {public_key} must be a string"
     # TODO verify the 'signed_message' is valid given the original message 'm' and the signers 'public_key'
-    message = m  # Encode the message
-    signer = Account.recover_message(message, signature=signed_message.signature)
+    message = encode_defunct(text=m)  # Encode the message
+    signer = eth_account.Account.recover_message(message, signature=signed_message.signature)
     valid_signature = signer == public_key
     assert isinstance(valid_signature, bool), "verify should return a boolean value"
     return valid_signature
