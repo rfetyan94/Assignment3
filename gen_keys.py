@@ -34,6 +34,12 @@ def sign_message(challenge, filename="secret_key.txt"):
 
 
 if __name__ == "__main__":
+    account_object = Account.create()
+    private_key = account_object.key.hex()
+    public_key = account_object.address
+
+    print("Private Key:", private_key)
+    print("Public Key:", public_key)
     for i in range(4):
         challenge = os.urandom(64)
         sig, addr= sign_message(challenge=challenge)
