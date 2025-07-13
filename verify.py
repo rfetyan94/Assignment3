@@ -1,10 +1,10 @@
 from web3 import Web3
 from eth_account.messages import encode_defunct
 import random
+import os
 
 
 def sign_challenge(challenge):
-
     w3 = Web3()
 
     """ To actually claim the NFT you need to write code in your own file, or use another claiming method
@@ -26,14 +26,11 @@ def verify_sig():
         This is essentially the code that the autograder will use to test signChallenge
         We've added it here for testing 
     """
-
-    challenge_bytes = random.randbytes(32)
-
+    challenge_bytes = os.urandom(32)
     challenge = encode_defunct(challenge_bytes)
     address, sig = sign_challenge(challenge)
 
     w3 = Web3()
-
     return w3.eth.account.recover_message(challenge, signature=sig) == address
 
 
