@@ -6,7 +6,7 @@ from eth_account import Account
 def sign(m):
     w3 = Web3()
     
-    assert isinstance(m, str), f"message {m} must be a string"
+    #assert isinstance(m, str), f"message {m} must be a string"
 
     # Create new Ethereum account
     account_object = eth_account.Account.create()
@@ -33,8 +33,8 @@ def sign(m):
 
 def verify(m, public_key, signed_message):
     w3 = Web3()
-    assert isinstance(m, str), f"message {m} must be a string"
-    assert isinstance(public_key, str), f"public_key {public_key} must be a string"
+    #assert isinstance(m, str), f"message {m} must be a string"
+    #assert isinstance(public_key, str), f"public_key {public_key} must be a string"
     # TODO verify the 'signed_message' is valid given the original message 'm' and the signers 'public_key'
     message = encode_defunct(text=m)  # Encode the message
     signer = eth_account.Account.recover_message(message, signature=signed_message.signature)
