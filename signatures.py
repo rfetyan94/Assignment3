@@ -4,7 +4,7 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 
 def sign(m):
-   ''' w3 = Web3()
+   '''w3 = Web3()
     
     #assert isinstance(m, str), f"message {m} must be a string"
 
