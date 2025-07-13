@@ -29,13 +29,10 @@ def verify_sig():
     challenge = encode_defunct(challenge_bytes)
     address, sig = sign_challenge(challenge)
 
-    #w3 = Web3()
-    #return w3.eth.account.recover_message(challenge, signature=sig) == address
     w3 = Web3()
-    recover = w3.eth.account.recover_message(challenge, signature=sig)
-    assert recover == address, "Recovered address does not match signer"
-    return recover == address
-    
+
+    return w3.eth.account.recover_message( challenge , signature=sig ) == address
+
 if __name__ == '__main__':
     """
         Test your function
