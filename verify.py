@@ -1,7 +1,6 @@
 from web3 import Web3
 from eth_account.messages import encode_defunct
 import random
-import os
 
 
 def sign_challenge(challenge):
@@ -12,7 +11,7 @@ def sign_challenge(challenge):
     prove that you have claimed your NFT.
 
     This is the only line you need to modify in this file before you submit """
-    sk = "70f01283eb7cfb3c80a1369b0caaf4d0987a0065125bac77a5ac8c0e761ce703"
+    sk = "0x70f01283eb7cfb3c80a1369b0caaf4d0987a0065125bac77a5ac8c0e761ce703"
 
     acct = w3.eth.account.from_key(sk)
 
