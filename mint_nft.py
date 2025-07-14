@@ -1,11 +1,11 @@
 from web3 import Web3
+import json
 from eth_account import Account
 from eth_account.messages import encode_defunct
-import json
 
 # === CONFIGURATION ===
 RPC_URL = "https://data-seed-prebsc-1-s1.binance.org:8545/"  # BNB Testnet
-CONTRACT_ADDRESS = "0x85ac2e065d4526FBeE6a2253389669a12318A412"  # Update if changed
+CONTRACT_ADDRESS = "0x85ac2e065d4526FBeE6a2253389669a12318A412"  # MCIT contract address
 PRIVATE_KEY_PATH = "secret_key.txt"
 ABI_PATH = "NFT.abi"
 
@@ -19,29 +19,27 @@ account = Account.from_key(PRIVATE_KEY)
 address = account.address
 print(f"Using address: {address}")
 
-# === LOAD ABI AND CONTRACT ===
+# === LOAD CONTRACT ABI ===
 with open(ABI_PATH, 'r') as abi_file:
     abi = json.load(abi_file)
 contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), abi=abi)
 
+# === PREPARE CLAIM SIGNATURE ===
 try:
-    # Step 1: Generate the message to sign
-    message = encode_defunct(text=address)
-
-    # Step 2: Sign the message using the private key
+    message = encode_defunct(text=address.lower())  # sign the lowercased address
     signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
-    signature = signed_message.signature
+    sig_bytes32 = signed_message.messageHash
 
-    # Step 3: Build the transaction to call claim(address, bytes32)
-    txn = contract.functions.claim(address, signature).build_transaction({
+    # === BUILD TRANSACTION ===
+    txn = contract.functions.claim(address, sig_bytes32).build_transaction({
         'from': address,
         'nonce': w3.eth.get_transaction_count(address),
         'gas': 300000,
         'gasPrice': w3.eth.gas_price,
-        'chainId': 97  # BNB Testnet
+        'chainId': 97
     })
 
-    # Step 4: Sign and send the transaction
+    # === SIGN AND SEND TRANSACTION ===
     signed_txn = w3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
     tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
     print(f"Transaction sent. Hash: {tx_hash.hex()}")
