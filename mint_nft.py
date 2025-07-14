@@ -37,8 +37,8 @@ with open(PRIVATE_KEY_PATH, 'r') as f:
 # === SETUP WEB3 AND ACCOUNT ===
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 account = Account.from_key(PRIVATE_KEY)
-address = account.address
-print(f"Using address: {address}")
+user_address = account.address
+print(f"Using address: {user_address}")
 
 # === LOAD CONTRACT ABI ===
 with open(ABI_PATH, 'r') as abi_file:
@@ -46,17 +46,17 @@ with open(ABI_PATH, 'r') as abi_file:
 contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), abi=abi)
 
 # === PREPARE MESSAGE AND SIGN ===
-message = encode_defunct(text=address)
+message = encode_defunct(text=user_address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
 
 # === MANUALLY COMPUTE messageHash FOR COMPATIBILITY ===
-message_hash_bytes32 = defunct_hash_message(text=address)
+message_hash_bytes32 = defunct_hash_message(text=user_address)
 
 # === BUILD TRANSACTION ===
 try:
-    txn = contract.functions.claim(address, message_hash_bytes32).build_transaction({
-        'from': address,
-        'nonce': w3.eth.get_transaction_count(address),
+    txn = contract.functions.claim(user_address, message_hash_bytes32).build_transaction({
+        'from': user_address,
+        'nonce': w3.eth.get_transaction_count(user_address),
         'gas': 300000,
         'gasPrice': w3.eth.gas_price,
         'chainId': CHAIN_ID
