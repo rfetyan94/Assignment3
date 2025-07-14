@@ -43,9 +43,10 @@ try:
 
     signed_txn = w3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
 
+    # Ensure we have the raw transaction bytes
     raw_tx = getattr(signed_txn, 'rawTransaction', None)
-    if raw_tx is None and isinstance(signed_txn, dict):
-        raw_tx = signed_txn.get('rawTransaction', None)
+    if raw_tx is None and hasattr(signed_txn, 'raw_transaction'):
+        raw_tx = getattr(signed_txn, 'raw_transaction')
 
     if raw_tx is None:
         raise Exception("rawTransaction not found in signed transaction")
