@@ -4,8 +4,7 @@ from eth_account import Account
 
 # === CONFIGURATION ===
 RPC_URL = "https://data-seed-prebsc-1-s1.binance.org:8545/"  # BNB Testnet RPC
-CONTRACT_ADDRESS = "0x85ac2e065d4526FBeE6a2253389669a12318A412"  # MCIT Token Contract
-CHAIN_ID = 97  # BNB Testnet
+CONTRACT_ADDRESS = "0x85ac2e065d4526FBeE6a2253389669a12318A412"  # MCIT NFT Contract
 PRIVATE_KEY_PATH = "secret_key.txt"
 ABI_PATH = "NFT.abi"
 
@@ -22,23 +21,16 @@ print(f"Using address: {address}")
 # === LOAD CONTRACT ABI ===
 with open(ABI_PATH, 'r') as abi_file:
     abi = json.load(abi_file)
-
 contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), abi=abi)
 
-# === DETERMINE FUNCTION NAME (SAFETY CHECK) ===
-if 'mint' not in contract.functions:
-    print("Function 'mint' not found in ABI. Available functions:")
-    print([fn.fn_name for fn in contract.functions])
-    exit()
-
-# === BUILD, SIGN AND SEND TRANSACTION ===
+# === MINT USING `claim()` FUNCTION ===
 try:
-    txn = contract.functions.mint().build_transaction({
+    txn = contract.functions.claim().build_transaction({
         'from': address,
         'nonce': w3.eth.get_transaction_count(address),
         'gas': 300000,
         'gasPrice': w3.eth.gas_price,
-        'chainId': CHAIN_ID
+        'chainId': 97  # BNB Testnet
     })
 
     signed_txn = w3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
