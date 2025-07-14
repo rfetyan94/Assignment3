@@ -1,8 +1,8 @@
 from web3 import Web3
 import json
 from eth_account import Account
-from eth_account.messages import encode_defunct
 import sys
+import os
 
 # === CONFIGURATION ===
 NETWORKS = {
@@ -18,7 +18,7 @@ NETWORKS = {
     }
 }
 
-NETWORK = sys.argv[1] if len(sys.argv) > 1 else "bsc"  # default to BSC if no argument
+NETWORK = sys.argv[1] if len(sys.argv) > 1 else "avax"  # default to AVAX if no argument
 if NETWORK not in NETWORKS:
     raise Exception(f"Unsupported network: {NETWORK}")
 
@@ -45,14 +45,12 @@ with open(ABI_PATH, 'r') as abi_file:
     abi = json.load(abi_file)
 contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), abi=abi)
 
-# === PREPARE MESSAGE AND SIGN ===
-message = encode_defunct(text=user_address)
-signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
-signature = signed_message.signature  # This is what the contract expects
+# === GENERATE RANDOM NONCE ===
+random_nonce = os.urandom(32)  # Generate random 32-byte nonce
 
 # === BUILD TRANSACTION ===
 try:
-    txn = contract.functions.claim(user_address, signature).build_transaction({
+    txn = contract.functions.claim(user_address, random_nonce).build_transaction({
         'from': user_address,
         'nonce': w3.eth.get_transaction_count(user_address),
         'gas': 300000,
