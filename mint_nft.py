@@ -1,6 +1,5 @@
 from web3 import Web3
 import json
-import os
 from eth_account import Account
 from eth_account.messages import encode_defunct
 
@@ -29,8 +28,8 @@ contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), a
 message = encode_defunct(text=address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
 
-# Convert message to bytes32 hash manually since messageHash doesn't exist
-message_hash_bytes32 = Web3.keccak(text=address)
+# Extract messageHash (bytes32)
+message_hash_bytes32 = signed_message['messageHash']  # Already bytes32
 
 # === BUILD TRANSACTION ===
 try:
@@ -48,14 +47,5 @@ try:
     print(f"Transaction sent! Hash: {tx_hash.hex()}")
     print(f"Track it here: https://testnet.bscscan.com/tx/{tx_hash.hex()}")
 
-except AttributeError as attr_err:
-    # Fix for case where 'rawTransaction' may not exist
-    print("Failed to send transaction: rawTransaction not found. Using 'rawTransaction' as bytes...")
-    try:
-        tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
-        print(f"Transaction sent! Hash: {tx_hash.hex()}")
-        print(f"Track it here: https://testnet.bscscan.com/tx/{tx_hash.hex()}")
-    except Exception as inner_e:
-        print("Inner error while sending transaction:", inner_e)
 except Exception as e:
     print("Failed to send transaction:", e)
