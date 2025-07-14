@@ -50,10 +50,10 @@ message = encode_defunct(text=address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
 
 # === EXTRACT messageHash SAFELY ===
-message_hash_bytes32 = getattr(signed_message, 'messageHash', None)
+message_hash_bytes32 = getattr(signed_message, 'hash', None)
 if message_hash_bytes32 is None:
     try:
-        message_hash_bytes32 = signed_message['messageHash']
+        message_hash_bytes32 = signed_message['hash']
     except Exception as e:
         raise Exception("Failed to extract message hash from signed message") from e
 
