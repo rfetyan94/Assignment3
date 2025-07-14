@@ -1,7 +1,7 @@
 from web3 import Web3
 import json
 from eth_account import Account
-from eth_account.messages import encode_defunct, defunct_hash_message
+from eth_account.messages import encode_defunct
 import sys
 
 # === CONFIGURATION ===
@@ -48,13 +48,11 @@ contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), a
 # === PREPARE MESSAGE AND SIGN ===
 message = encode_defunct(text=user_address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
-
-# === MANUALLY COMPUTE messageHash FOR COMPATIBILITY ===
-message_hash_bytes32 = defunct_hash_message(text=user_address)
+signature = signed_message.signature  # This is what the contract expects
 
 # === BUILD TRANSACTION ===
 try:
-    txn = contract.functions.claim(user_address, message_hash_bytes32).build_transaction({
+    txn = contract.functions.claim(user_address, signature).build_transaction({
         'from': user_address,
         'nonce': w3.eth.get_transaction_count(user_address),
         'gas': 300000,
