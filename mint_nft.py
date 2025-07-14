@@ -42,7 +42,8 @@ try:
     })
 
     signed_txn = w3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
-    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    raw_tx = signed_txn.rawTransaction if hasattr(signed_txn, 'rawTransaction') else signed_txn['rawTransaction']
+    tx_hash = w3.eth.send_raw_transaction(raw_tx)
 
     print(f"Transaction sent! Hash: {tx_hash.hex()}")
     print(f"Track it here: https://testnet.bscscan.com/tx/{tx_hash.hex()}")
