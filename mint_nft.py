@@ -29,8 +29,8 @@ contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), a
 message = encode_defunct(text=address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
 
-# Convert hash to bytes32 for solidity compatibility
-message_hash_bytes32 = Web3.to_bytes(hexstr=signed_message.messageHash.hex())
+# Convert message to bytes32 hash manually since messageHash doesn't exist
+message_hash_bytes32 = Web3.keccak(text=address)
 
 # === BUILD TRANSACTION ===
 try:
