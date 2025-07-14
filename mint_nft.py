@@ -4,7 +4,6 @@ from eth_account import Account
 import sys
 import os
 
-# === CONFIGURATION ===
 NETWORKS = {
     "bsc": {
         "rpc_url": "https://data-seed-prebsc-1-s1.binance.org:8545/",
@@ -26,29 +25,24 @@ RPC_URL = NETWORKS[NETWORK]["rpc_url"]
 CHAIN_ID = NETWORKS[NETWORK]["chain_id"]
 EXPLORER = NETWORKS[NETWORK]["explorer"]
 
-CONTRACT_ADDRESS = "0x85ac2e065d4526FBeE6a2253389669a12318A412"  # MCIT Token Contract
+CONTRACT_ADDRESS = "0x85ac2e065d4526FBeE6a2253389669a12318A412" 
 PRIVATE_KEY_PATH = "secret_key.txt"
 ABI_PATH = "NFT.abi"
 
-# === LOAD PRIVATE KEY ===
 with open(PRIVATE_KEY_PATH, 'r') as f:
     PRIVATE_KEY = f.read().strip()
 
-# === SETUP WEB3 AND ACCOUNT ===
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 account = Account.from_key(PRIVATE_KEY)
 user_address = account.address
 print(f"Using address: {user_address}")
 
-# === LOAD CONTRACT ABI ===
 with open(ABI_PATH, 'r') as abi_file:
     abi = json.load(abi_file)
 contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), abi=abi)
 
-# === GENERATE RANDOM NONCE ===
-random_nonce = os.urandom(32)  # Generate random 32-byte nonce
+random_nonce = os.urandom(32)  
 
-# === BUILD TRANSACTION ===
 try:
     txn = contract.functions.claim(user_address, random_nonce).build_transaction({
         'from': user_address,
@@ -60,7 +54,6 @@ try:
 
     signed_txn = w3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
 
-    # Ensure we have the raw transaction bytes
     raw_tx = getattr(signed_txn, 'rawTransaction', None)
     if raw_tx is None:
         raw_tx = getattr(signed_txn, 'raw_transaction', None)
