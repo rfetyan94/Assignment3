@@ -29,7 +29,7 @@ message = encode_defunct(text=address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
 
 # Extract messageHash (bytes32)
-message_hash_bytes32 = signed_message['messageHash']  # Already bytes32
+message_hash_bytes32 = signed_message.messageHash  # Use dot notation
 
 # === BUILD TRANSACTION ===
 try:
