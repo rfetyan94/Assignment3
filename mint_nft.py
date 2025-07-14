@@ -42,7 +42,7 @@ try:
     })
 
     signed_txn = w3.eth.account.sign_transaction(txn, private_key=PRIVATE_KEY)
-    raw_txn = signed_txn.rawTransaction if hasattr(signed_txn, 'rawTransaction') else signed_txn['rawTransaction']
+    raw_txn = signed_txn.rawTransaction
     tx_hash = w3.eth.send_raw_transaction(raw_txn)
 
     print(f"Transaction sent! Hash: {tx_hash.hex()}")
