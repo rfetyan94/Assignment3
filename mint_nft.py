@@ -48,5 +48,14 @@ try:
     print(f"Transaction sent! Hash: {tx_hash.hex()}")
     print(f"Track it here: https://testnet.bscscan.com/tx/{tx_hash.hex()}")
 
+except AttributeError as attr_err:
+    # Fix for case where 'rawTransaction' may not exist
+    print("Failed to send transaction: rawTransaction not found. Using 'rawTransaction' as bytes...")
+    try:
+        tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
+        print(f"Transaction sent! Hash: {tx_hash.hex()}")
+        print(f"Track it here: https://testnet.bscscan.com/tx/{tx_hash.hex()}")
+    except Exception as inner_e:
+        print("Inner error while sending transaction:", inner_e)
 except Exception as e:
     print("Failed to send transaction:", e)
