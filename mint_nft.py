@@ -1,7 +1,7 @@
 from web3 import Web3
 import json
 from eth_account import Account
-from eth_account.messages import encode_defunct
+from eth_account.messages import encode_defunct, defunct_hash_message
 import sys
 
 # === CONFIGURATION ===
@@ -49,13 +49,8 @@ contract = w3.eth.contract(address=Web3.to_checksum_address(CONTRACT_ADDRESS), a
 message = encode_defunct(text=address)
 signed_message = Account.sign_message(message, private_key=PRIVATE_KEY)
 
-# === EXTRACT messageHash SAFELY ===
-message_hash_bytes32 = getattr(signed_message, 'hash', None)
-if message_hash_bytes32 is None:
-    try:
-        message_hash_bytes32 = signed_message['hash']
-    except Exception as e:
-        raise Exception("Failed to extract message hash from signed message") from e
+# === MANUALLY COMPUTE messageHash FOR COMPATIBILITY ===
+message_hash_bytes32 = defunct_hash_message(text=address)
 
 # === BUILD TRANSACTION ===
 try:
